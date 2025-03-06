@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useEcomStore from "../../store/ecom-store";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { numberFormat } from "../../utils/number";
 
 const Payment = () => {
   const [buyOrder, setBuyOrder] = useState([])
@@ -183,7 +183,7 @@ const Payment = () => {
                         Original price
                       </dt>
                       <dd class="text-base font-medium text-gray-900 dark:text-white">
-                        {cartTotal}
+                        {numberFormat(cartTotal)}
                       </dd>
                     </dl>
 
@@ -201,7 +201,7 @@ const Payment = () => {
                         Store Pickup
                       </dt>
                       <dd class="text-base font-medium text-gray-900 dark:text-white">
-                        {(cartTotal - cartTotal * (7 / 100)).toFixed(2)}
+                        {numberFormat(cartTotal - cartTotal * (7 / 100))}
                       </dd>
                     </dl>
 
@@ -210,7 +210,7 @@ const Payment = () => {
                         Tax
                       </dt>
                       <dd class="text-base font-medium text-gray-900 dark:text-white">
-                        {(cartTotal * (7 / 100)).toFixed(2)}
+                        {numberFormat(cartTotal * (7 / 100))}
                       </dd>
                     </dl>
                   </div>
@@ -220,7 +220,7 @@ const Payment = () => {
                       Total
                     </dt>
                     <dd class="text-base font-bold text-gray-900 dark:text-white">
-                      {cartTotal}
+                      {numberFormat(cartTotal)}
                     </dd>
                   </dl>
                 </div>

@@ -1,6 +1,7 @@
 import { ListChecks } from "lucide-react";
 import useEcomStore from "../store/ecom-store";
 import { Link, useNavigate } from "react-router-dom";
+import { numberFormat } from "../utils/number";
 
 const ListCart = () => {
   const carts = useEcomStore((state) => state.carts);
@@ -68,7 +69,7 @@ const ListCart = () => {
 
                 <div>
                   <div className="font-bold text-orange-300 p-3">
-                    ${(item.price * item.count).toFixed(2)}
+                    {numberFormat(item.price * item.count)}
                   </div>
                 </div>
               </div>
@@ -85,7 +86,7 @@ const ListCart = () => {
           <p className="text-2xl font-bold px-1">Total</p>
           <div className="flex justify-between">
             <span className="pt-5 px-1">Total Price</span>
-            <span className="text-2xl font-bold p-3 text-red-400">${getTotalPrice()}</span>
+            <span className="text-2xl font-bold p-3 text-red-400">{numberFormat(getTotalPrice())}</span>
           </div>
 
           <div className="flex flex-col gap-2 p-3">

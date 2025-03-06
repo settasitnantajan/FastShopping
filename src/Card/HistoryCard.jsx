@@ -1,4 +1,5 @@
 import useEcomStore from "../store/ecom-store";
+import { numberFormat } from "../utils/number";
 
 const HistoryCard = () => {
   const order = useEcomStore((s) => s.order);
@@ -73,7 +74,7 @@ const HistoryCard = () => {
               <div>
                 <div className="text-right font-bold px-4 py-4 text-red-400 shadow-xl rounded-sm">
                   <p>Total Price</p>
-                  <p>${item.totalPrice}</p>
+                  <p>{numberFormat(item.totalPrice)}</p>
                 </div>
               </div>
             </div>

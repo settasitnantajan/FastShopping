@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import useEcomStore from "../store/ecom-store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { numberFormat } from "../utils/number";
 
 const SummaryCard = () => {
   const carts = useEcomStore((stare) => stare.carts);
@@ -78,13 +79,13 @@ const SummaryCard = () => {
                     {/* item.product.title */}
                     <p className="text-xs font-bold">{item.title}</p>
                     <p className="text-xs p-2">
-                      {item.count} Pcs. x ${item.price}
+                      {item.count} Pcs. x {numberFormat(item.price)}
                     </p>
                   </div>
 
                   <div>
                     <p className="text-red-500 font-bold">
-                      ${item.price * item.count}
+                      {numberFormat(item.price * item.count)}
                     </p>
                   </div>
                 </div>
@@ -107,7 +108,7 @@ const SummaryCard = () => {
               <div className="flex justify-between">
                 <p className="font-bold">Total</p>
                 <p className="text-red-400 font-bold text-lg">
-                  ${cartTotal.toFixed(2)}
+                  {numberFormat(cartTotal)}
                 </p>
               </div>
             </div>

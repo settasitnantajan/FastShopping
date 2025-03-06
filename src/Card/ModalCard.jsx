@@ -1,6 +1,7 @@
 import { Star, ShoppingCart } from "lucide-react";
 import useEcomStore from "../store/ecom-store";
 import { dateFormat } from "../utils/dateFormat";
+import { numberFormat } from "../utils/number";
 
 const ModalCard = ({ isVisible, onclose }) => {
   const modal = useEcomStore((state) => state.modal);
@@ -84,7 +85,7 @@ const ModalCard = ({ isVisible, onclose }) => {
               <p className="text-xs text-red-500">
                 Discount : {modal.discountPercentage} %
               </p>
-              $ {modal.price}
+              {numberFormat(modal.price)}
             </span>
 
             <button
