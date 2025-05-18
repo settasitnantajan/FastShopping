@@ -11,62 +11,75 @@ const DetailsModalCardHome = ({item}) => {
   
     return (
       
-      <div>
-  
+      <div className="h-full w-full"> {/* Ensure this div takes full space of SwiperSlide */}
         <motion.div
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-           <div className="rounded-md shadow-2xl  w-54 h-80 border-b-gray-600">
-            <p className="text-center bg-red-500 text-white rounded-2xl">save {item.discountPercentage}%</p>
-          <div className="flex justify-center items-center">
-        <div>
-  
-          {
-            item.images
-            && item.images?.length > 0 
-            ? <img
-            loading="lazy"
-            src={item.images[0]
-              ? item.images[0]
-              : item.images[1] || item.images[2] || item.images[3]
-            } alt={item.tittle} className="w-full h-38 p-4 object-cover hover:scale-110 hover:duration-200"/>
-            : <div className="w-full h-24 bg-gray-200 rounded-md shadow">
-            No image
-          </div>
-          }
-          </div>
-          
-  
-        </div>
-        <div className="px-2">
-          <p className="text-l font-bold overflow-hidden truncate pb-3">{item.title}</p>
-          <div className="border border-orange-300 text-orange-300 font-bold text-xs w-fit px-1">Free Shipping</div>
-          <div className="flex items-center pt-2">
-          <Star size={16} className="text-yellow-300"/>
-          <p className="text-xs text-yellow-300 px-1">
-            {item.rating}</p>
-          </div>
-        </div>
-  
-        <div className="flex justify-between items-end px-3">
-          <span className="text-xl font-bold">${item.price} </span>
-  
-          <button onClick={() => {
-            actionAddtoCart(item)
-            toast.success("Add product to cart Successfully!!", {
-                position: "top-center",
-              });
-        }}
-          className="bg-orange-300 rounded-full p-2.5 hover:bg-orange-400 show-md text-white">
-            <ShoppingCart/>
-          </button>
-        </div>
-      </div> 
-      </motion.div>
-  
-  
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="h-full w-full" // Ensure motion div also takes full space
+        >
+          {/* Card container: Aim for height consistency with SkeletonCard (e.g., h-[21rem]) */}
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-[21rem] w-full">
+            {/* Image section with discount badge */}
+            <div className="relative w-full h-44 sm:h-48 flex-shrink-0"> {/* Fixed height for image area */}
+              {
+                item.images && item.images?.length > 0 
+                ? <img
+                    loading="lazy"
+                    // Simplified src logic, assuming images[0] is the primary image
+                    src={item.images[0]} 
+                    alt={item.title || "Product image"} // Use item.title for alt text
+                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-200" // object-contain to see full image, p-2 for padding
+                  />
+                : <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                    No image
+                  </div>
+              }
+              {item.discountPercentage > 0 && ( // Display discount badge only if there's a discount
+                <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
+                  Save {item.discountPercentage}%
+                </div>
+              )}
+            </div>
+
+            {/* Content section */}
+            <div className="p-3 sm:p-4 flex flex-col flex-grow"> {/* flex-grow allows this section to fill remaining space */}
+              <h3 
+                className="text-sm sm:text-md font-semibold text-gray-800 truncate mb-1" 
+                title={item.title} // Show full title on hover if truncated
+              >
+                {item.title}
+              </h3>
+
+              <div className="mb-2"> {/* Free shipping badge */}
+                <span className="border border-orange-400 text-orange-500 font-medium text-xs py-0.5 px-1.5 rounded">
+                  Free Shipping
+                </span>
+              </div>
+
+              <div className="flex items-center text-xs text-gray-600 mb-3"> {/* Rating */}
+                <Star size={16} className="text-yellow-400 mr-1"/>
+                <span>{item.rating}</span>
+              </div>
+
+              {/* Price and Add to Cart Button - pushed to bottom */}
+              <div className="mt-auto flex justify-between items-center">
+                <span className="text-lg font-bold text-gray-900">${item.price}</span>
+                {/* <button 
+                  onClick={() => {
+                    actionAddtoCart(item);
+                    toast.success("Add product to cart Successfully!!", {
+                      position: "top-center",
+                    });
+                  }}
+                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-full p-2 sm:p-2.5 shadow-md transition-colors duration-150 cursor-pointer"
+                >
+                  <ShoppingCart size={18} sm:size={20}/>
+                </button> */}
+              </div>
+            </div>
+          </div> 
+        </motion.div>
       </div>
       
     );

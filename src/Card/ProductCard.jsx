@@ -27,7 +27,13 @@ const Card = ({item}) => {
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5 }}
   >
-    <button onClick={getModalCard}>
+    <div 
+      onClick={getModalCard} 
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') getModalCard(); }}
+      role="button" 
+      tabIndex="0" 
+      className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-300 rounded-md" // Added accessibility and styling
+    >
 
          <div className="rounded-md shadow-2xl  w-54 h-84 border-b-gray-600">
         <div className="flex justify-center items-center">
@@ -78,7 +84,7 @@ const Card = ({item}) => {
         </button>
       </div>
     </div> 
-          </button>
+          </div>
     </motion.div>
 
     <ModalCard isVisible={showModal} onclose={()=>setShowModal(false)}/>

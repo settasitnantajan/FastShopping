@@ -13,6 +13,7 @@ const SummaryCard = () => {
   });
   const [addressSave, setAddressSave] = useState(false);
   const navigate = useNavigate();
+  const saveUserAddress = useEcomStore((state) => state.saveUserAddress);
 
  
   useEffect(() => {
@@ -27,11 +28,15 @@ const SummaryCard = () => {
   };
 
   const hdlSaveAddress = () => {
-    toast.success("save address complete");
-    if (!address) {
-      return toast.warning("Please fill address");
+    if (!address.address || address.address.trim().length === 0) { // Check if address is empty or only whitespace
+      return toast.warning("Please fill in your address.");
     }
+    if (address.address.trim().length < 10) {
+      return toast.warning("Address must be at least 10 characters long.");
+    }
+    saveUserAddress(address); // Save address to the store
     setAddressSave(true);
+    toast.success("Address saved successfully!");
   };
 
   const hdlGoToPayment = () => {
@@ -51,7 +56,7 @@ const SummaryCard = () => {
             <textarea
               required
               onChange={(e) => {
-                setAddress(e.target.value);
+                setAddress({ address: e.target.value });
               }}
               placeholder="please put your address..."
               className="w-full px-2 bg-white rounded-md"

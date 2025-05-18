@@ -5,34 +5,46 @@ import { dateFormat } from "../utils/dateFormat";
 import { createAllProduct } from "../api/Product";
 
 const ecomStore = (set, get) => ({
+  initialFilters: { // Define initial/default filters
+    text: '',
+    categories: [],
+    price: [0, 35000],
+  },
   user: [
     {
-      email: "settasit.nantajan@gmail.com",
-      password: "Ad0833190809",
-      confirmPassword: "Ad0833190809"
-    },
-  ],
-    userStatus: false,
+          email: "settasit.nantajan@gmail.com" // Removed comma as it's the only property in this object
+        } // Close the object
+      ], // Close the array and add a comma for the next property
+      userStatus: false, // This is now correctly a top-level property
     userName: "",
     login: [],
     category: [],
+    allProducts: [], // Store all products unfiltered
     products: [],
+    currentFilters: {
+      text: '',
+      categories: [],
+      price: [0, 35000], // Default price range
+    },
     order: [],
     carts: [],
     modal: [],
-
+    userAddress: null, // To store the user's shipping address
 
 
   logout: () => {
       set({
-          user: [],
+          // user: [],
           userStatus: false,
           userName: "",
           login: [],
           category: [],
+          allProducts: [],
           products: [],
+          currentFilters: get().initialFilters, // Reset to initial filters
           order: [],
           carts: [],
+          userAddress: null,
     });
   },
 
@@ -44,6 +56,11 @@ const ecomStore = (set, get) => ({
     const uniqe = _.unionWith(updateCart, _.isEqual);
     set({ carts: uniqe });
   },
+
+  saveUserAddress: (addressDetails) => {
+    set({ userAddress: addressDetails });
+  },
+
 
 
 
@@ -86,13 +103,14 @@ const ecomStore = (set, get) => ({
 
 
   actionLogin: (item) => {
-    const userLogin = get().login;
+    // const userLogin = get().login; // ไม่จำเป็นต้องใช้ตัวแปรนี้สำหรับการเปรียบเทียบอีกต่อไป
     const userLocalStorage = get().user;
      set({ userStatus: true });
-     set({ login: item });
+     set({ login: item }); // เก็บข้อมูลการล็อกอินปัจจุบันลง store
+    // เปรียบเทียบกับ `item` ที่รับเข้ามาในฟังก์ชัน actionLogin โดยตรง
     const getTrue = userLocalStorage.some(
-      (item) =>
-        item.email === userLogin.email && item.password === userLogin.password
+      (storedUser) => // storedUser คือ user แต่ละคนใน userLocalStorage
+        storedUser.email === item.email && storedUser.password === item.password
     );
 
     if (getTrue) {
@@ -131,74 +149,66 @@ const ecomStore = (set, get) => ({
   getProduct: async () => {
     try {
       const res = await createAllProduct();
-
-      set({ products: res.data.products });
+      set({
+        allProducts: res.data.products,
+        // products: res.data.products, // Will be set by applyAllFilters
+        // Optionally reset filters here if desired, or let them persist
+        // currentFilters: { text: '', categories: [], price: get().currentFilters.price || [0, 35000] }
+      });
+      get().applyAllFilters(); // Apply current (possibly persisted) filters
     } catch (error) {
       console.log(error)
     }
   },
 
+  setFilter: (filterType, value) => {
+    set((state) => ({
+      currentFilters: {
+        ...state.currentFilters,
+        [filterType]: value,
+      },
+    }));
+    get().applyAllFilters();
+  },
 
-
-  actionSearchFilter: async (text) => {
-    try {
-      const res = await get().products
-      const updateProduct = await set({
-        products: res.filter((item) =>
-          item.title.toLowerCase().includes(text)
-      ),
-    })
-      const updateCartCard = [...res, {...updateProduct}]
-
-      return updateCartCard
-
-    } catch (error) {
-      console.log(error.message);
-    }
+  clearAllFilters: () => {
+    set((state) => ({
+      currentFilters: state.initialFilters, // Reset to default
+    }));
+    get().applyAllFilters(); // Re-apply filters which will now be the defaults
   },
 
 
+  applyAllFilters: () => {
+    const { allProducts, currentFilters } = get();
+    let filtered = [...allProducts];
 
-  actionSearchCategory: async (text) => {
-    try {
-      const res = await get().products
-      const getAllData = await createAllProduct()
-
-      const updateProduct =  
-      await set({
-     
-       products: getAllData.data.products.filter((item) =>
-         text.includes(item.category)
-     ),
-   })
-        
-      const updateCartCard = [new Set( ...res, {...updateProduct})]
-      return updateCartCard
-
-    } catch (error) {
-      console.log(error.message);
+    // Apply text filter
+    if (currentFilters.text) {
+      filtered = filtered.filter((item) =>
+        item.title.toLowerCase().includes(currentFilters.text.toLowerCase())
+      );
     }
+
+    // Apply category filter
+    if (currentFilters.categories && currentFilters.categories.length > 0) {
+      filtered = filtered.filter((item) =>
+        currentFilters.categories.includes(item.category)
+      );
+    }
+
+    // Apply price filter
+    if (currentFilters.price) {
+      filtered = filtered.filter(
+        (item) =>
+          item.price >= currentFilters.price[0] && item.price <= currentFilters.price[1]
+      );
+    }
+
+    set({ products: filtered });
   },
 
-
-
-  actionSearchPrice: async (text) => {
-    try {
-      const res = await get().products
-      const getAllData = await createAllProduct()
-      const updateProduct = await set({
-        products: getAllData.data.products.filter(
-          (item) => item.price > text[0] && item.price < text[1]
-        ),
-      })
-      const updateCartCard = [...res, {...updateProduct}]
-
-      return updateCartCard
-
-    } catch (error) {
-      console.log(error.message);
-    }
-  },
+  // Old actionSearchFilter, actionSearchCategory, actionSearchPrice are replaced by setFilter and applyAllFilters
 
 
 
@@ -206,8 +216,9 @@ const ecomStore = (set, get) => ({
     const orders = get().order;
     const userName = get().userName;
     const carts = get().carts;
+    const shippingAddress = get().userAddress; // Get the saved address
     const createUserName = userName[0].email;
-    const createTime = dateFormat(new Date().toUTCString());
+    const createTime = new Date().toISOString(); // Store as ISO string
     const createOrderId = Math.random().toString(36).slice(2);
     const totalPrice = await carts
       .reduce((num, item) => num + item.price * item.count, 0)
@@ -221,6 +232,7 @@ const ecomStore = (set, get) => ({
         orderID: createOrderId,
         userName: createUserName,
         totalPrice: totalPrice,
+        shippingAddress: shippingAddress ? shippingAddress.address : "N/A", // Add shipping address to the order
       },
     ];
 

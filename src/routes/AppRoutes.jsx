@@ -10,6 +10,7 @@ import Register from "../page/auth/Register";
 import Layout from "../layout/Layout";
 import LayoutUser from "../layout/LayoutUser";
 import Payment from "../page/user/Payment";
+import NotFoundPage from "../page/NotFoundPage";
 
 
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       { path: "checkout", element: <Checkout /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+      { path: "*", element: <NotFoundPage /> } // Catch-all for /
     ],
   },
 
@@ -32,9 +34,12 @@ const router = createBrowserRouter([
     element: <LayoutUser />,
     children: [
       { path: 'history', element: <History /> },
+      { path: "shop", element: <Shop /> },
       { path: 'payment', element: <Payment /> },
+      { path: "*", element: <NotFoundPage /> } // Catch-all for /user
     ],
   },
+  { path: "*", element: <NotFoundPage /> } // Global catch-all
 ]);
 
 const AppRoutes = () => {
